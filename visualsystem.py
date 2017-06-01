@@ -14,6 +14,6 @@ class VisualSystem:
     def __init__(self):
 
 
-    def movement(self, images):
+    def get_movement(self, images):
         #calculate amount of movement in the robot's vision
 
