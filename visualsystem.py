@@ -8,13 +8,15 @@ Created on Wed May 17 11:06:37 2017
 import cv2
 import numpy as np
 import naoqi
+import time
+import matplotlib.pyplot as plt
 
 class VisualSystem:
     """
     Calculates the amount of movement, given the images of the robot camera
     """
-    def __init__(self):
-        print "hello world"
+    def __init__(self, videoProxy):
+        self.videoProxy = videoProxy
 
     def movement(self, images):
         print "hello world"
@@ -45,21 +47,22 @@ class VisualSystem:
         resolution = 0
         colorspace = 13
         fps = 10
-        camera = videoProxy.subscribeCamera(cam_name, cam_type, \
-            resolution, colorspace, fps)
-        t1 = time.time()
-        image_container = videoProxy.getImageRemote(camera)
-        t2 = time.time()
+        try:
+            self.videoProxy.unsubscribeCamera(cam_name, cam_type, resolution, colorspace, fps)
+        except:
+            pass
+        camera = self.videoProxy.subscribeCamera(cam_name, cam_type, resolution, colorspace, fps)
+        image_container = self.videoProxy.getImageRemote(camera)
         width = image_container[0]
         height = image_container[1]
         image = np.zeros((width, height, 3), np.uint8)
         values = map(ord, list(image_container[6]))
         i=0
-        t3 = time.time()
         image = np.array(values, np.uint8).reshape((height, width, 3))
         t4 = time.time()
-        videoProxy.unsubscribe(camera)
-        cv2.imwrite("firstimage.png", image)
+        self.videoProxy.unsubscribe(camera)
+        plt.imshow(image)
+        plt.show()
 
     def getCVversion(self):
         print "cv version" + cv2.__version__
@@ -79,8 +82,7 @@ class VisualSystem:
     	smoothed_mask = cv2.GaussianBlur(closing, (9,9), 0)
     	blue_image = cv2.bitwise_and(image, image, mask = smoothed_mask)
     	gray_image = blue_image[:, :, 2]
-    	circles = cv2.HoughCircles(gray_image, 3 , 1, 1, param1 = 200, \
-            param2=20, minRadius=5, maxRadius=100)
+    	circles = cv2.HoughCircles(gray_image, 3 , 1, 1, param1 = 200, param2=20, minRadius=5, maxRadius=100)
     	circle = circles[0, :][0]
     	cv2.circle(image, (circle[0], circle[1]), circle[2], (0, 255, 0), 2)
     	circle = circles[0, :][1]
@@ -88,3 +90,8 @@ class VisualSystem:
     	embed()
     	cv2.imshow("Main", image)
     	cv2.waitKey()
+
+
+if __name__ == "__main__":
+	capture_frame()
+	imload()

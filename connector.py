@@ -1,7 +1,9 @@
 """
 @author: Pieter Wolfert
 """
+from visualsystem import VisualSystem
 from naoqi import ALProxy
+import matplotlib.pyplot as plt
 
 class RobotConnect:
     """
@@ -23,14 +25,17 @@ class RobotConnect:
         self.motionProxy = ALProxy("ALMotion", self.robotip, self.port)
 
     def setVideoProxy(self):
-        self.videoProxy = ALproxy("ALVideoDevice", self.robotip, self.port)
+        self.videoProxy = ALProxy("ALVideoDevice", self.robotip, self.port)
 
 """
 Main is purely for testing purposes.
 """
 def main():
-    naomi = RobotConnect("192.168.0.104")
-    naomi.setMotionProxy()
+    naomi = RobotConnect("192.168.1.143")
+    naomi.setVideoProxy()
+    vs = VisualSystem(naomi.videoProxy)
+    vs.capture_frame()
+    #vs.loadImage()
 
 if __name__ == '__main__':
     main()
