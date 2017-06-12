@@ -16,7 +16,6 @@ class VisualSystem:
 
     def movement(self, images):
         print "hello world"
-        #calculate amount of movement in the robot's vision
 
     def getMovement(self,
 
