@@ -10,6 +10,7 @@ import numpy as np
 import naoqi
 import time
 import matplotlib.pyplot as plt
+from IPython import embed
 
 class VisualSystem:
     """
@@ -17,9 +18,18 @@ class VisualSystem:
     """
     def __init__(self, videoProxy):
         self.videoProxy = videoProxy
+        self.cam_name = "camera"
+        self.cam_type = 0
+        self.resolution = 0
+        self.colorspace = 13
+        self.fps = 30
+        self.circlePrev = False
+        self.prevCircleX = 0
+        self.Xcenter = 0
+        self.Ycenter = 0
 
-    def movement(self, images):
-        print "hello world"
+    def unsubscribe(self):
+        self.videoProxy.unsubscribe(self.cam_name)
 
     def getMovement(self, frame1, frame2):
         """
@@ -32,7 +42,7 @@ class VisualSystem:
 
     def detectCenter(self, frame):
         """
-        Detect center of red tracker square.
+        Detect center of blue tracker ball.
         """
         x = 0.0
         y = 0.0
@@ -42,16 +52,11 @@ class VisualSystem:
         """
         Captures frame (image).
         """
-        cam_name = "camera"
-        cam_type = 0
-        resolution = 0
-        colorspace = 13
-        fps = 10
         try:
-            self.videoProxy.unsubscribeCamera(cam_name, cam_type, resolution, colorspace, fps)
+            self.videoProxy.unsubscribeCamera(self.cam_name, self.cam_type, self.resolution, self.colorspace, self.fps)
         except:
             pass
-        camera = self.videoProxy.subscribeCamera(cam_name, cam_type, resolution, colorspace, fps)
+        camera = self.videoProxy.subscribeCamera(self.cam_name, self.cam_type, self.resolution, self.colorspace, self.fps)
         image_container = self.videoProxy.getImageRemote(camera)
         width = image_container[0]
         height = image_container[1]
@@ -59,19 +64,13 @@ class VisualSystem:
         values = map(ord, list(image_container[6]))
         i=0
         image = np.array(values, np.uint8).reshape((height, width, 3))
-        t4 = time.time()
         self.videoProxy.unsubscribe(camera)
-        plt.imshow(image)
-        plt.show()
+        return image
 
-    def getCVversion(self):
-        print "cv version" + cv2.__version__
-
-    def loadImage(self):
+    def getBall(self, image):
         """
         Loading image which was captured. Needs some finetuning to detect red blob.
         """
-        image = cv2.imread("firstimage.png")
     	lower_blue = np.array([70, 50, 50], dtype = np.uint8)
     	upper_blue = np.array([170, 255, 255], dtype = np.uint8)
     	hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
@@ -83,13 +82,17 @@ class VisualSystem:
     	blue_image = cv2.bitwise_and(image, image, mask = smoothed_mask)
     	gray_image = blue_image[:, :, 2]
     	circles = cv2.HoughCircles(gray_image, 3 , 1, 1, param1 = 200, param2=20, minRadius=5, maxRadius=100)
-    	circle = circles[0, :][0]
-    	cv2.circle(image, (circle[0], circle[1]), circle[2], (0, 255, 0), 2)
-    	circle = circles[0, :][1]
-    	cv2.circle(image, (circle[0], circle[1]), circle[2], (0, 255, 0), 2)
-    	embed()
-    	cv2.imshow("Main", image)
-    	cv2.waitKey()
+        if circles is not None:
+            circle = circles[0, :][0]
+            self.Xcenter = circle[0]
+            self.Ycenter = circle[1]
+            cv2.circle(image, (circle[0], circle[1]), circle[2], (0, 255, 0), 2)
+            if self.circlePrev == False:
+                print "don't see a thing"
+            self.circlePrev = True
+            self.prevCircleX = circle[0]
+            return image
+        return image
 
 
 if __name__ == "__main__":
