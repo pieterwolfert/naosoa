@@ -1,4 +1,3 @@
-
 from connector import RobotConnect
 from comparator import Comparator
 from integrator import Integrator
@@ -23,5 +22,3 @@ connector = RobotConnect(ip)
 """
 Training loop in which the networks are trained on-line
 """
-
-
