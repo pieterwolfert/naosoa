@@ -22,6 +22,9 @@ class RobotConnect:
     def setMotionProxy(self):
         self.motionProxy = ALProxy("ALMotion", self.robotip, self.port)
 
+    def setVideoProxy(self):
+        self.videoProxy = ALproxy("ALVideoDevice", self.robotip, self.port)
+
 """
 Main is purely for testing purposes.
 """
