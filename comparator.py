@@ -9,11 +9,9 @@ class Comparator:
 	"""
 	Calculates the error in predicted mobile movement
 	"""
-	def __init__(self, actual, predicted):
-		self.actual = actual
-		self.predicted = predicted
+	def calculate_error(self, actual, predicted):
 
-		self.error = self.actual - self.predicted
+		return actual - predicted
 
 
 

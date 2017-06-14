@@ -25,6 +25,9 @@ class RobotConnect:
     def setVideoProxy(self):
         self.videoProxy = ALproxy("ALVideoDevice", self.robotip, self.port)
 
+    def get_images(self, nr_of_images):
+
+
 """
 Main is purely for testing purposes.
 """
