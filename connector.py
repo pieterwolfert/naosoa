@@ -28,13 +28,10 @@ class RobotConnect:
     def setVideoProxy(self):
         self.videoProxy = ALProxy("ALVideoDevice")
 
-    def get_images(self, nr_of_images):
-
-
-"""
-Main is purely for testing purposes.
-"""
 def main():
+    """
+    Main is purely for testing purposes.
+    """
     myBroker = ALBroker("myBroker", "0.0.0.0", 0, "192.168.1.143", 9559)
     naomi = RobotConnect("naomi")
     naomi.setVideoProxy()
@@ -44,7 +41,7 @@ def main():
             image = vs.capture_frame()
             image = vs.getBall(image)
             cv2.imshow("Image", image)
-            print vs.Xcenter, vs.Ycenter
+            vs.getDifference()
             time.sleep(1)
             if cv2.waitKey(33) == 27:
                 vs.unsubscribe()

@@ -6,9 +6,11 @@ Created on Wed May 17 11:06:37 2017
 """
 
 import cv2
+import math
 import numpy as np
 import naoqi
 import time
+from scipy.spatial import distance
 import matplotlib.pyplot as plt
 from IPython import embed
 
@@ -27,6 +29,8 @@ class VisualSystem:
         self.prevCircleX = 0
         self.Xcenter = 0
         self.Ycenter = 0
+        self.Xcenter_old = 0
+        self.Ycenter_old = 0
 
     def unsubscribe(self):
         self.videoProxy.unsubscribe(self.cam_name)
@@ -67,6 +71,16 @@ class VisualSystem:
         self.videoProxy.unsubscribe(camera)
         return image
 
+    def updateCenter(self, x, y):
+        self.Xcenter_old = self.Xcenter
+        self.Ycenter_old = self.Ycenter
+        self.Xcenter = x
+        self.Ycenter = y
+
+    def getDifference(self):
+        dist = distance.euclidean((self.Xcenter_old, self.Ycenter_old),(self.Xcenter, self.Ycenter))
+        print dist
+
     def getBall(self, image):
         """
         Loading image which was captured. Needs some finetuning to detect red blob.
@@ -84,8 +98,7 @@ class VisualSystem:
     	circles = cv2.HoughCircles(gray_image, 3 , 1, 1, param1 = 200, param2=20, minRadius=5, maxRadius=100)
         if circles is not None:
             circle = circles[0, :][0]
-            self.Xcenter = circle[0]
-            self.Ycenter = circle[1]
+            self.updateCenter(circle[0], circle[1])
             cv2.circle(image, (circle[0], circle[1]), circle[2], (0, 255, 0), 2)
             if self.circlePrev == False:
                 print "don't see a thing"
