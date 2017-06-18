@@ -4,6 +4,13 @@ Created on Wed May 17 11:11:27 2017
 
 @author: WoutervanderWeel
 """
+import os
+
+import theano
+import lasagne
+from theano import tensor as T
+
+import numpy as np
 
 class Integrator:
 	"""
@@ -13,72 +20,76 @@ class Integrator:
 			prediction error of the perceived mobile movement
 	Outputs: motor commands (velocity, angles) for the 4 robot limbs
 	"""
-	def __init__(self):
-		#stuff
+	def __init__(self, data_size, n_classes, network_name):
+		#name for the network, to save and load
+		self.network_name = network_name
+
+		#input and output sizes
+		self.data_size = data_size
+		self.n_classes = n_classes
+
 		# input tensors for data and targets
-		input_var = T.fmatrix('input')
-		target_var = T.dmatrix('targets')
+		self.input_var = T.fmatrix('input')
+		self.target_var = T.dmatrix('targets')
 
-	def train(self, input_images,):
-		x = 1
+		# get the network
+		#self.network = self.buildNetwork(self.input_var, self.data_size, self.n_classes)
 
-	# function to split training set into training and validation subsets
-	def split_training_validation_datasets(x, y, n_classes, val_percentage=0.3, val_balanced=True):
-		"""
-        Derive a training and a validation datasets from a given dataset with
-        data (x) and labels (y). By default, the validation set is 30% of the
-        training set, and it has balanced samples across classes. When balancing,
-        it takes the 30% of the class with less samples as reference.
-        """
-		multiplier = 1 - val_percentage
-		x_train = []
-		y_train = []
-		x_validation = []
-		y_validation = []
+		# get the prediction during training
+		self.prediction = lasagne.layers.get_output(self.network)
 
-		if val_balanced:
-			nClasses = max(y) + 1
-			lengths = [sum(y == i) for i in range(int(nClasses))]
-			print lengths
-			minimum = min(lengths)
-			print minimum
-			print val_percentage
-			valSize = int(round(val_percentage * minimum))
-			for i in range(int(nClasses)):
-				print valSize
-				indices = np.argwhere(y == i)
-				indices = indices.flatten()
-				x_validation.extend(x[indices[:valSize]])
-				y_validation.extend(y[indices[:valSize]])
-				x_train.extend(x[indices[valSize + 1:]])
-				y_train.extend(y[indices[valSize + 1:]])
+		# define the (data) loss
+		self.loss = lasagne.objectives.categorical_crossentropy(self.prediction, self.target_var)
+		self.loss = self.loss.mean()
 
+	def limb_movements(self, error, movement, epoch):
+		#load previous epoch network or build network
+		if (epoch != 0):
+			#load network from previous epoch
+			network = self.readNetwork()
 		else:
-			length = int(round(multiplier * len(x)))
-			for i in range(len(x)):
-				if i <= length:
-					x_train.extend(x[i])
-					y_train.extend(y[i])
-				else:
-					x_validation.extend(x[i])
-					y_validation.extend(y[i])
-		x_validation = np.asarray(x_validation)
-		y_validation = np.asarray(y_validation)
-		return x_train, y_train, x_validation, y_validation
+			# build a new network
+			network = self.buildNetwork()
 
-	def shuffle_training_set:
-		# shuffle training dataset
-		# EXTREMELY UGLY CODE PLS FIX
-		indTrain = range(len(x_train))
-		np.random.shuffle(indTrain)
-		n_features = np.array(x_train).shape[1]
+		# train the network with new input
+		network = self.trainNetwork(error, movement)
 
-		xplaceholder = np.zeros((len(x_train), n_features))
-		yplaceholder = np.zeros(len(y_train))
-		for i in indTrain:
-			xplaceholder[i] = x_train[i]
-			yplaceholder[i] = y_train[i]
-		x_train = np.asarray(xplaceholder)
-		y_train = np.asarray(yplaceholder)
+		#use the trained network to calculate appropriate limb movements
 
+
+		#save the network after this epoch
+		params = lasagne.layers.get_all_param_values(network)
+		self.saveNetwork(params)
+
+
+	def buildNetwork(self, input_var, data_size, n_classes):
+		#lasagne tutorial
+		l_in = lasagne.layers.InputLayer(shape=(None, 1, 28, 28),input_var=self.input_var)
+
+		# default paramaters are used now, if we improve on this later on, denseLayer takes an argument W for weight init
+		network = lasagne.layers.InputLayer(shape=(None, 1, data_size[1], 1))
+		hidden = lasagne.layers.DenseLayer(network, num_units=10, nonlinearity=lasagne.nonlinearities.sigmoid)
+		output = lasagne.layers.DenseLayer(hidden, num_units=n_classes, nonlinearity=lasagne.nonlinearities.softmax)
+
+		return output
+
+	def readNetwork(self):
+		#read in the previous network
+		network = self.buildNetwork()
+
+		# Load and set stored parameters from file
+		npz = np.load('./' + self.network_name + '.npz')
+		lasagne.layers.set_all_param_values(network, npz['params'])
+
+		return network
+
+	def trainNetwork(self, input_images):
+		#train the network for 1 epoch
+
+		return network
+
+	def saveNetwork(self, network_name, params):
+		#save the trained network
+		np.savez(
+			os.path.join('./', self.network_name + '.npz'),params=params)
 
