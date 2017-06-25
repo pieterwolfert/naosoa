@@ -33,23 +33,24 @@ epoch = 0
 while True:
 
     #get a number of images to calculate movement in the last few seconds
-    camera_images = connector.get_images(nr_images) #a stream of images
+    camera_images = connector.getImages(nr_images) #a stream of images
 
-    #Calculate movement based
-    detected_movement = vision.get_movement(camera_images)
+    #calculate mobile movement based on the images
+    detected_movement = vision.getMovement(camera_images)
 
-    #receives the limb movements to predict mobile movement
-    predicted_movement = sensorimotorsystem.prediction(prev_limb_movements)
+    #if epoch != 0:
+        #receives the limb movements to predict mobile movement
+        #predicted_movement = sensorimotorsystem.getPrediction(prev_limb_movements)
 
     #compare predicted mobile movement with actual mobile movement
-    error = comparator.error(detected_movement, predicted_movement)
+    error = comparator.error(detected_movement, predicted_movement, prev_limb_movements)
 
     #outputs limb movements
-    limb_movements = integrator.limb_movements(error, detected_movement, epoch)
+    limb_movements = integrator.limbMovements(error, detected_movement, epoch)
 
     #use limb_movements to move robot limbs
-    #connector.move(limb_movements)
+    connector.move(limb_movements)
 
     #remember limb movements for use in sensorimotorsystem
-    #prev_limb_movements = limb_movements
+    prev_limb_movements = limb_movements
     epoch += 1

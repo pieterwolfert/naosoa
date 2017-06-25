@@ -15,56 +15,47 @@ import numpy as np
 class Integrator:
 	"""
 	Calculates the required motor commands that will make the mobile move more, based on reward for previous movements 
-	and error in predicted mobile movement
+	and error in predicted mobile movement. Tries to minimize error, while maximizing mobile movement
 	Inputs: (reward for) amount of mobile movement,
 			prediction error of the perceived mobile movement
+			previous limb movements/motor commands
 	Outputs: motor commands (velocity, angles) for the 4 robot limbs
 	"""
-	def __init__(self, data_size, n_classes, network_name):
+	def __init__(self):
 		#name for the network, to save and load
-		self.network_name = network_name
+		self.network_name = 'integrator'
 
-		#input and output sizes
-		self.data_size = data_size
-		self.n_classes = n_classes
-
+	def limbMovements(self, error, mobile_movement, epoch):
 		# input tensors for data and targets
-		self.input_var = T.fmatrix('input')
-		self.target_var = T.dmatrix('targets')
+		input_var = T.fmatrix('input')
+		target_var = T.dmatrix('targets')
 
-		# get the network
-		#self.network = self.buildNetwork(self.input_var, self.data_size, self.n_classes)
+		# input and output sizes
+		data_size = data_size
+		n_classes = n_classes
 
-		# get the prediction during training
-		self.prediction = lasagne.layers.get_output(self.network)
-
-		# define the (data) loss
-		self.loss = lasagne.objectives.categorical_crossentropy(self.prediction, self.target_var)
-		self.loss = self.loss.mean()
-
-	def limb_movements(self, error, movement, epoch):
 		#load previous epoch network or build network
 		if (epoch != 0):
 			#load network from previous epoch
-			network = self.readNetwork()
+			network = readNetwork()
 		else:
 			# build a new network
-			network = self.buildNetwork()
+			network = buildNetwork(input_var, data_size, n_classes)
 
 		# train the network with new input
-		network = self.trainNetwork(error, movement)
+		network = trainNetwork(error, mobile_movement)
 
 		#use the trained network to calculate appropriate limb movements
 
 
 		#save the network after this epoch
 		params = lasagne.layers.get_all_param_values(network)
-		self.saveNetwork(params)
+		saveNetwork(params)
 
 
 	def buildNetwork(self, input_var, data_size, n_classes):
 		#lasagne tutorial
-		l_in = lasagne.layers.InputLayer(shape=(None, 1, 28, 28),input_var=self.input_var)
+		#l_in = lasagne.layers.InputLayer(shape=(None, 1, 28, 28),input_var=self.input_var)
 
 		# default paramaters are used now, if we improve on this later on, denseLayer takes an argument W for weight init
 		network = lasagne.layers.InputLayer(shape=(None, 1, data_size[1], 1))
@@ -86,9 +77,18 @@ class Integrator:
 	def trainNetwork(self, input_images):
 		#train the network for 1 epoch
 
+		# get the prediction during training
+		self.prediction = lasagne.layers.get_output(self.network)
+
+		# define the (data) loss
+		self.loss = lasagne.objectives.categorical_crossentropy(self.prediction, self.target_var)
+		self.loss = self.loss.mean()
+
+
+
 		return network
 
-	def saveNetwork(self, network_name, params):
+	def saveNetwork(self, params):
 		#save the trained network
 		np.savez(
 			os.path.join('./', self.network_name + '.npz'),params=params)
