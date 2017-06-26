@@ -25,32 +25,38 @@ class Integrator:
 		#name for the network, to save and load
 		self.network_name = 'integrator'
 
+		#first create a network and use it every epoch?
+		#create all things required for the network as well.
+
 	def limbMovements(self, error, mobile_movement, epoch):
 		# input tensors for data and targets
 		input_var = T.fmatrix('input')
 		target_var = T.dmatrix('targets')
 
 		# input and output sizes
-		data_size = data_size
-		n_classes = n_classes
+		data_size = #size(mobile_movement, error)
+		n_classes = #No_Limbs
 
 		#load previous epoch network or build network
 		if (epoch != 0):
 			#load network from previous epoch
-			network = readNetwork()
+			network = self.readNetwork()
 		else:
 			# build a new network
-			network = buildNetwork(input_var, data_size, n_classes)
+			network = self.buildNetwork(input_var, data_size, n_classes)
+
+		# Create theano functions
+
 
 		# train the network with new input
-		network = trainNetwork(error, mobile_movement)
+		network = self.trainNetwork(network, error, mobile_movement, input_var, target_var)
 
 		#use the trained network to calculate appropriate limb movements
 
 
 		#save the network after this epoch
 		params = lasagne.layers.get_all_param_values(network)
-		saveNetwork(params)
+		self.saveNetwork(params)
 
 
 	def buildNetwork(self, input_var, data_size, n_classes):
@@ -74,7 +80,7 @@ class Integrator:
 
 		return network
 
-	def trainNetwork(self, input_images):
+	def trainNetwork(self, network, input_images, input_var, target_var):
 		#train the network for 1 epoch
 
 		# get the prediction during training
