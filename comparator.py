@@ -12,6 +12,3 @@ class Comparator:
 	def calculate_error(self, actual, predicted):
 
 		return actual - predicted
-
-
-

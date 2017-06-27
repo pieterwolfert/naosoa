@@ -7,8 +7,11 @@ import time
 
 class RandomMovement:
     def __init__(self, ALMotionProxy):
-        #initialization for random movement
+        """
+        Class for randommovement, can move limbs separately or all together.
+        """
         self.motionProxy = ALMotionProxy
+
     def moveRandomLimb(self):
         pass#select a limb, move it
 

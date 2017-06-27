@@ -19,9 +19,15 @@ class SensoriMotorSystem:
 	Needs to be trained online, to become increasingly accurate during the experiment
 	"""
 	def __init__(self):
+		"""
+		Class for sensorimotorsystem.
+		"""
 		self.network_name = 'sensorimotorsystem'
 
 	def getPrediction(self, mobile_movement, limb_movements):
+		"""
+		Makes prediction based on mobile and limb movement. 
+		"""
 		#get a prediction for the amount of mobile movement with these limb movements.
 
 		# input tensors for data and targets

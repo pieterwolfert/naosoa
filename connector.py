@@ -25,6 +25,9 @@ class RobotConnect:
     def setMotionProxy(self):
         self.motionProxy = ALProxy("ALMotion")
 
+    def setPostureProxy(self):
+        self.postureProxy = ALProxy("ALRobotPosture")
+
     def setVideoProxy(self):
         self.videoProxy = ALProxy("ALVideoDevice")
 
@@ -52,8 +55,6 @@ def main():
         print "Interrupted by user, shutting down"
         myBroker.shutdown()
         sys.exit(0)
-
-
 
 if __name__ == '__main__':
     main()
