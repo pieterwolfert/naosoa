@@ -1,5 +1,4 @@
 from connector import RobotConnect
-from comparator import Comparator
 from visualsystem import VisualSystem
 from movement import Movement
 from integrator import Integrator
@@ -15,7 +14,7 @@ def valueControl(limb_value):
     Check for whether the limb speed value can be updated.
     """
     rnd = random.uniform(-0.1, 0.1)
-    if limb_value + rand < 0.0 or limb_value + rand > 1.0:
+    if limb_value + rnd < 0.0 or limb_value + rnd > 1.0:
         return limb_value - rnd
     return limb_value + rnd
 
@@ -69,13 +68,14 @@ def main():
     nr_epochs = 5
     nr_iterations = 10
     limb_speeds = [0.1, 0.1, 0.1, 0.1] #left leg, right leg, left arm, right arm
+    limb_speeds_epoch = []
     mobile_movement = 0
     mobile_movement_epoch = []
     limb_speeds = [random.uniform(0.3, 0.7) for x in range(4)]
     for epoch in range(nr_epochs):
         print("Epoch " + str(epoch))
         for iteration in range(nr_iterations):
-            limb_speeds = [changeValue(x) for x in limb_speeds]
+            limb_speeds = [valueControl(x) for x in limb_speeds]
             if cv2.waitKey(33) == 27:
                 vs.unsubscribe()
                 myBroker.shutdown()
