@@ -1,14 +1,14 @@
 from connector import RobotConnect
 from comparator import Comparator
 from visualsystem import VisualSystem
-from randommovement import RandomMovement
+from movement import Movement
+from integrator import Integrator
 import cv2
 import naoqi
 import time
-
+import random
 
 myBroker = None
-nr_epochs = 5
 
 def setParameters():
     """
@@ -23,14 +23,14 @@ def setParameters():
     connector.setVideoProxy()
     return connector
 
-def objectSpeed(VisualSystem):
+def objectSpeed(vs):
     """
     Calculates the speed of the ball. Plots the camera output.
     """
     image = vs.capture_frame()
     image = vs.getBall(image)
     cv2.imshow("Image", image)
-    vs.getDifference()
+    return vs.getDifference()
 
 
 def main():
@@ -39,8 +39,8 @@ def main():
     """
     job = setParameters()
     vs = VisualSystem(job.videoProxy)
-    randomMovement = RandomMovement(job.motionProxy)
-    prev_limb_movements = None
+    movement = Movement(job.motionProxy)
+
     """
     Preparations
     """
@@ -51,36 +51,47 @@ def main():
     maxSpeedFraction = 0.4
     job.motionProxy.setAngles(joints, target_angle, maxSpeedFraction)
     time.sleep(2)
+
     """
     Training loop in which the networks are trained on-line
     """
-    epoch = 0
-    error = 0
+    learning_rate = 0.01
+    integrator = Integrator(learning_rate)
+
+    nr_epochs = 5
+    nr_iterations = 10
+
+    limb_speeds = [0.1, 0.1, 0.1, 0.1] #left leg, right leg, left arm, right arm
+    limb_speeds_epoch = []
     mobile_movement = 0
+    mobile_movement_epoch = []
+
     for epoch in range(nr_epochs):
-        print("Epoch "+ str(epoch))
-        # outputs limb movement speeds
-        #limb_speeds = integrator.limbMovements(error, mobile_movement, epoch)
+        print("Epoch " + str(epoch))
+        for iteration in range(nr_iterations):
 
-        limb_speeds = [((0.1+1.0*epoch)%10)/10, ((5.1+1.0*epoch)%10)/10, ((2.5+1.0*epoch)%10)/10, ((7.5+1.0*epoch)%10)/10]
+            if epoch == 0:
+                limb_speeds = [random.uniform(0.3, 0.7),
+                               random.uniform(0.3, 0.7),
+                               random.uniform(0.3, 0.7),
+                               random.uniform(0.3, 0.7)]
 
-        # use limb_movements to move robot limbs
-        #connector.move(limb_speeds)
-        objectSpeed(vs)
-        if cv2.waitKey(33) == 27:
-            vs.unsubscribe()
-            myBroker.shutdown()
-            break #break the while loop
+            if cv2.waitKey(33) == 27:
+                vs.unsubscribe()
+                myBroker.shutdown()
+                break #break the loop
 
-        randomMovement.moveRandomAll(limb_speeds, epoch)
-        time.sleep(5)
-        #get a number of images to calculate movement in the last few seconds
-        #camera_images = connector.getImages() #a stream of images
-        #receives the limb movements to predict mobile movement
-        #predicted_mobile_movement = sensorimotorsystem.getPrediction(mobile_movement, limb_speeds)
-        #compare predicted mobile movement with actual mobile movement
-        #error = comparator.error(mobile_movement, predicted_mobile_movement, limb_speeds)
-        epoch += 1
+            print("limb_speeds: " + str(limb_speeds))
+            movement.moveAll(limb_speeds, epoch)
+            mobile_movement = objectSpeed(vs)
+            time.sleep(5)
+
+            limb_speeds_epoch.append(limb_speeds)
+            mobile_movement_epoch.append(mobile_movement)
+
+        #calculate new speeds with limb_speeds and mobile_movement from previous epoch
+        limb_speeds = integrator.limbSpeeds(limb_speeds_epoch, mobile_movement_epoch, epoch)
+
     """
     End of experiment
     """

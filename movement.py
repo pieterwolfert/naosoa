@@ -5,17 +5,17 @@ author: Pieter Wolfert
 import naoqi
 import time
 
-class RandomMovement:
+class Movement:
     def __init__(self, ALMotionProxy):
         """
-        Class for randommovement, can move limbs separately or all together.
+        Class for movement, can move limbs separately or all together.
         """
         self.motionProxy = ALMotionProxy
 
-    def moveRandomLimb(self):
+    def moveLimb(self):
         pass#select a limb, move it
 
-    def moveRandomAll(self, limb_speeds, epoch):
+    def moveAll(self, limb_speeds, epoch):
         # move all limbs to a certain degree
 
         #move up or down based on epoch
@@ -27,7 +27,7 @@ class RandomMovement:
             target_angle_arms = [-0.5]
 
         #set speeds for different limbs
-        #speed = [0.1, 0.1, 0.5, 0.5]
+        #limb_speeds = [((0.1+1.0*epoch)%10)/10, ((5.1+1.0*epoch)%10)/10, ((2.5+1.0*epoch)%10)/10, ((7.5+1.0*epoch)%10)/10]
         self.moveLeftLeg(target_angle_legs, limb_speeds[0])
         self.moveRightLeg(target_angle_legs, limb_speeds[1])
         self.moveLeftArm(target_angle_arms, limb_speeds[2])
@@ -71,11 +71,11 @@ if __name__ == "__main__":
     motionProxy.setAngles(joints, target_angle, maxSpeedFraction)
     time.sleep(2)
 
-    randomMovement = RandomMovement(motionProxy)
+    randomMovement = Movement(motionProxy)
 
     for epoch in range(nr_epochs):
         print(epoch)
-        randomMovement.moveRandomAll(epoch)
+        randomMovement.moveAll(epoch)
         time.sleep(3)
 
     # Sit
