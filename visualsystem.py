@@ -79,7 +79,7 @@ class VisualSystem:
 
     def getDifference(self):
         dist = distance.euclidean((self.Xcenter_old, self.Ycenter_old),(self.Xcenter, self.Ycenter))
-        print dist
+        print("mobile movement: " + str(dist))
         return dist
 
     def getBall(self, image):

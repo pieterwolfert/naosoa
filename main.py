@@ -66,7 +66,7 @@ def main():
     learning_rate = 0.01
     integrator = Integrator(learning_rate)
     nr_epochs = 5
-    nr_iterations = 10
+    nr_iterations = 5
     limb_speeds = [0.1, 0.1, 0.1, 0.1] #left leg, right leg, left arm, right arm
     limb_speeds_epoch = []
     mobile_movement = 0
@@ -87,7 +87,7 @@ def main():
             limb_speeds_epoch.append(limb_speeds)
             mobile_movement_epoch.append(mobile_movement)
         #calculate new speeds with limb_speeds and mobile_movement from previous epoch
-        limb_speeds = integrator.limbSpeeds(limb_speeds_epoch, mobile_movement_epoch, epoch)
+        limb_speeds = integrator.limbSpeeds(limb_speeds_epoch, mobile_movement_epoch)
     """
     End of experiment
     """

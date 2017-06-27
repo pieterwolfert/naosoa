@@ -29,6 +29,7 @@ class Integrator:
 		"""
 		#Calculate correlation between each limb and the mobile movement
 		correlations, avg_limb_speeds = self.correlation(limb_speeds_epoch, mobile_movement_epoch)
+		print correlations
 		max_corr_limb = np.argmax[correlations]
 
 		#Increase the speed of the limb that correlated most and decrease the speeds of other limbs
@@ -46,7 +47,7 @@ class Integrator:
 							limb_speeds_left_leg, limb_speeds_right_leg,
 							mobile_movement_epoch])
 
-		return [corr[0,4],corr[1,4],corr[2,4],corr[3,4]], [np.mean(limb_speeds_left_leg),
+		return [corr[0, 4], corr[1, 4], corr[2, 4], corr[3, 4]], [np.mean(limb_speeds_left_leg),
 														   np.mean(limb_speeds_right_leg),
 														   np.mean(limb_speeds_left_arm),
 														   np.mean(limb_speeds_right_arm)]
