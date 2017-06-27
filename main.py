@@ -1,8 +1,8 @@
 from connector import RobotConnect
 from comparator import Comparator
-from integrator import Integrator
-from visualsystem import VisualSystem
-from sensorimotorsystem import SensoriMotorSystem
+#from integrator import Integrator
+#from visualsystem import VisualSystem
+#from sensorimotorsystem import SensoriMotorSystem
 from randommovement import RandomMovement
 
 import naoqi
@@ -32,10 +32,10 @@ Instantiate all needed classes
 
 #Create the robot system parts
 connector = RobotConnect(ip)
-vision = VisualSystem()
-sensorimotorsystem = SensoriMotorSystem()
-comparator = Comparator()
-integrator = Integrator()
+#vision = VisualSystem()
+#sensorimotorsystem = SensoriMotorSystem()
+#comparator = Comparator()
+#integrator = Integrator()
 randomMovement = RandomMovement(motionProxy)
 
 prev_limb_movements = None
@@ -62,26 +62,27 @@ mobile_movement = 0
 for epoch in range(nr_epochs):
     print("Epoch "+ str(epoch))
     # outputs limb movement speeds
-    limb_speeds = integrator.limbMovements(error, mobile_movement, epoch)
+    #limb_speeds = integrator.limbMovements(error, mobile_movement, epoch)
+
+    limb_speeds = [((0.1+1.0*epoch)%10)/10, ((5.1+1.0*epoch)%10)/10, ((2.5+1.0*epoch)%10)/10, ((7.5+1.0*epoch)%10)/10]
 
     # use limb_movements to move robot limbs
-    connector.move(limb_speeds)
+    #connector.move(limb_speeds)
 
-
-    randomMovement.moveRandomAll(epoch)
-    time.sleep(3)
+    randomMovement.moveRandomAll(limb_speeds, epoch)
+    time.sleep(5)
 
     #get a number of images to calculate movement in the last few seconds
-    camera_images = connector.getImages() #a stream of images
+    #camera_images = connector.getImages() #a stream of images
 
     #calculate mobile movement based on the images
-    mobile_movement = vision.getMovement(camera_images)
+    #mobile_movement = vision.getMovement(camera_images)
 
     #receives the limb movements to predict mobile movement
-    predicted_mobile_movement = sensorimotorsystem.getPrediction(mobile_movement, limb_speeds)
+    #predicted_mobile_movement = sensorimotorsystem.getPrediction(mobile_movement, limb_speeds)
 
     #compare predicted mobile movement with actual mobile movement
-    error = comparator.error(mobile_movement, predicted_mobile_movement, limb_speeds)
+    #error = comparator.error(mobile_movement, predicted_mobile_movement, limb_speeds)
 
     epoch += 1
 

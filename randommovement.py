@@ -12,7 +12,7 @@ class RandomMovement:
     def moveRandomLimb(self):
         pass#select a limb, move it
 
-    def moveRandomAll(self, epoch):
+    def moveRandomAll(self, limb_speeds, epoch):
         # move all limbs to a certain degree
 
         #move up or down based on epoch
@@ -24,11 +24,11 @@ class RandomMovement:
             target_angle_arms = [-0.5]
 
         #set speeds for different limbs
-        speed = [0.1, 0.1, 0.1, 0.1]
-        self.moveLeftLeg(target_angle_legs, speed[0])
-        self.moveRightLeg(target_angle_legs, speed[1])
-        self.moveLeftArm(target_angle_arms, speed[2])
-        self.moveRightArm(target_angle_arms, speed[3])
+        #speed = [0.1, 0.1, 0.5, 0.5]
+        self.moveLeftLeg(target_angle_legs, limb_speeds[0])
+        self.moveRightLeg(target_angle_legs, limb_speeds[1])
+        self.moveLeftArm(target_angle_arms, limb_speeds[2])
+        self.moveRightArm(target_angle_arms, limb_speeds[3])
 
     def moveLeftLeg(self, target_angle, maxSpeedFraction):
         #move left leg
@@ -52,7 +52,7 @@ if __name__ == "__main__":
     ip = '192.168.1.143'
     port = 9559
 
-    nr_epochs = 20
+    nr_epochs = 10
 
     # Create posture proxy
     postureProxy = naoqi.ALProxy("ALRobotPosture", ip, port)

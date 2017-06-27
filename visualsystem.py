@@ -81,6 +81,7 @@ class VisualSystem:
         dist = distance.euclidean((self.Xcenter_old, self.Ycenter_old),(self.Xcenter, self.Ycenter))
         print dist
 
+
     def getBall(self, image):
         """
         Loading image which was captured. Needs some finetuning to detect red blob.
