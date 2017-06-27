@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 """
+@author: WoutervanderWeel
 @author: Pieter Wolfert
 """
 from visualsystem import VisualSystem
@@ -9,26 +11,34 @@ import time
 
 class RobotConnect:
     """
-    Class for connecting to robot.
-    IP has to be a string.
+    Handles all connections and proxies for the robot.
     """
     def __init__(self,name):
+        """Initialize connection object
+
+        Keyword arguments:
+        name -- string with name of robot
+        """
         self.name = name
 
-    """
-    Get proxy with a given name.
-    Returns the specific proxy blob.
-    """
     def setProxy(self, name):
-        self.nameProxy = ALProxy(name)
+        """Sets a proxy to naoqi module.
+
+        Keyword arguments:
+        name -- string with name of module to connect to.
+        """
+        self.unnamedProxy = ALProxy(name)
 
     def setMotionProxy(self):
+        """Sets a naoqi motion proxy."""
         self.motionProxy = ALProxy("ALMotion")
 
     def setPostureProxy(self):
+        """Sets a naoqi posture proxy."""
         self.postureProxy = ALProxy("ALRobotPosture")
 
     def setVideoProxy(self):
+        """Sets a naoqi video proxy."""
         self.videoProxy = ALProxy("ALVideoDevice")
 
 def main():

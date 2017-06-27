@@ -1,14 +1,20 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed May 17 11:20:12 2017
-
 @author: WoutervanderWeel
+@author: Pieter Wolfert
 """
 
 class Comparator:
-	"""
-	Calculates the error in predicted mobile movement
-	"""
-	def calculate_error(self, actual, predicted):
+	"""Comparing predicted and actual values."""
+	def __init__(self, name):
+		"""Init comparator object."""
+		self.name = name
 
+	def calculate_error(self, actual, predicted):
+		"""Returns the error based on difference actual - predicted.
+
+		Keyword arguments:
+		actual -- actual value of movement speed
+		predicted -- predicted value for movement speed.
+		"""
 		return actual - predicted

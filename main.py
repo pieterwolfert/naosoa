@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+"""
+@author: WoutervanderWeel
+@author: Pieter Wolfert
+"""
 from connector import RobotConnect
 from visualsystem import VisualSystem
 from movement import Movement
@@ -12,6 +17,10 @@ myBroker = None
 def valueControl(limb_value):
     """
     Check for whether the limb speed value can be updated.
+    Updates with random value (added noise).
+
+    Keyword arguments:
+    limb_value -- current speed of limb
     """
     rnd = random.uniform(-0.1, 0.1)
     if limb_value + rnd < 0.0 or limb_value + rnd > 1.0:
@@ -20,7 +29,7 @@ def valueControl(limb_value):
 
 def setParameters():
     """
-    Setting broker to connect to the robot.
+    Setting broker and parameters to connect to the robot.
     """
     ip = '192.168.1.143'
     port = 9559
@@ -34,6 +43,9 @@ def setParameters():
 def objectSpeed(vs):
     """
     Calculates the speed of the ball. Plots the camera output.
+
+    Keyword arguments:
+    vs -- Visualsystem object.
     """
     image = vs.capture_frame()
     image = vs.getBall(image)
@@ -48,18 +60,17 @@ def main():
     job = setParameters()
     vs = VisualSystem(job.videoProxy)
     movement = Movement(job.motionProxy)
-
     """
     Preparations
     """
     job.postureProxy.goToPosture("LyingBack", 0.7)
     #Set joints to standard position
-    joints = ["LShoulderPitch", "RShoulderPitch", "RElbowRoll", "LElbowRoll", "LHipPitch", "RHipPitch", "LKneePitch", "RKneePitch"]
+    joints = ["LShoulderPitch", "RShoulderPitch", "RElbowRoll", "LElbowRoll",
+                "LHipPitch", "RHipPitch", "LKneePitch", "RKneePitch"]
     target_angle = [-0.1, -0.1, 0.0, 0.0, -0.1, -0.1, 0.0, 0.0]
     maxSpeedFraction = 0.4
     job.motionProxy.setAngles(joints, target_angle, maxSpeedFraction)
     time.sleep(2)
-
     """
     Training loop in which the networks are trained on-line
     """
@@ -86,7 +97,8 @@ def main():
             time.sleep(5)
             limb_speeds_epoch.append(limb_speeds)
             mobile_movement_epoch.append(mobile_movement)
-        #calculate new speeds with limb_speeds and mobile_movement from previous epoch
+        #calculate new speeds with limb_speeds and
+        #mobile_movement from previous epoch
         limb_speeds = integrator.limbSpeeds(limb_speeds_epoch, mobile_movement_epoch)
     """
     End of experiment

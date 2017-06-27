@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed May 17 11:06:37 2017
-
+@author: WoutervanderWeel
 @author: Pieter Wolfert
 """
-
 import cv2
 import math
 import numpy as np
@@ -15,10 +13,13 @@ import matplotlib.pyplot as plt
 from IPython import embed
 
 class VisualSystem:
-    """
-    Calculates the amount of movement, given the images of the robot camera
-    """
+    """Visualsystem processing video in- and output."""
     def __init__(self, videoProxy):
+        """Initialize the visualsystem.
+
+        Keyword arguments:
+        videoProxy -- containing a naoqi ALProxy object for video
+        """
         self.videoProxy = videoProxy
         self.cam_name = "camera"
         self.cam_type = 0
@@ -33,34 +34,20 @@ class VisualSystem:
         self.Ycenter_old = 0
 
     def unsubscribe(self):
+        """Unsubscribe the videoProxy"""
         self.videoProxy.unsubscribe(self.cam_name)
-
-    def getMovement(self, frame1, frame2):
-        """
-        Calculates movement given two frames.
-        TODO Movement calculation. Can be done using center detection.
-        Returns derivative of the two centers of object in image.
-        """
-        movement = 0.0
-        return movement
-
-    def detectCenter(self, frame):
-        """
-        Detect center of blue tracker ball.
-        """
-        x = 0.0
-        y = 0.0
-        return x,y
 
     def capture_frame(self):
         """
         Captures frame (image).
         """
         try:
-            self.videoProxy.unsubscribeCamera(self.cam_name, self.cam_type, self.resolution, self.colorspace, self.fps)
+            self.videoProxy.unsubscribeCamera(self.cam_name, self.cam_type,\
+                             self.resolution, self.colorspace, self.fps)
         except:
             pass
-        camera = self.videoProxy.subscribeCamera(self.cam_name, self.cam_type, self.resolution, self.colorspace, self.fps)
+        camera = self.videoProxy.subscribeCamera(self.cam_name,\
+                 self.cam_type, self.resolution, self.colorspace, self.fps)
         image_container = self.videoProxy.getImageRemote(camera)
         width = image_container[0]
         height = image_container[1]
@@ -72,19 +59,27 @@ class VisualSystem:
         return image
 
     def updateCenter(self, x, y):
+        """Sets new center coordinates derived from image.
+
+        Keyword arguments:
+        x -- x coordinate(float)
+        y -- y coordinate(float)
+        """
         self.Xcenter_old = self.Xcenter
         self.Ycenter_old = self.Ycenter
         self.Xcenter = x
         self.Ycenter = y
 
     def getDifference(self):
-        dist = distance.euclidean((self.Xcenter_old, self.Ycenter_old),(self.Xcenter, self.Ycenter))
-        print("mobile movement: " + str(dist))
-        return dist
+        """Calculates euclidean distance between two centers. """
+        return istance.euclidean((self.Xcenter_old, self.Ycenter_old),\
+                                 (self.Xcenter, self.Ycenter))
 
     def getBall(self, image):
-        """
-        Loading image which was captured. Needs some finetuning to detect red blob.
+        """Detects the blue ball in a given image.
+
+        Keyword arguments:
+        image -- image in cv2 format
         """
     	lower_blue = np.array([70, 50, 50], dtype = np.uint8)
     	upper_blue = np.array([170, 255, 255], dtype = np.uint8)
@@ -96,7 +91,8 @@ class VisualSystem:
     	smoothed_mask = cv2.GaussianBlur(closing, (9,9), 0)
     	blue_image = cv2.bitwise_and(image, image, mask = smoothed_mask)
     	gray_image = blue_image[:, :, 2]
-    	circles = cv2.HoughCircles(gray_image, 3 , 1, 1, param1 = 200, param2=20, minRadius=5, maxRadius=100)
+    	circles = cv2.HoughCircles(gray_image, 3 , 1, 1, param1 = 200,\
+                                   param2=20, minRadius=5, maxRadius=100)
         if circles is not None:
             circle = circles[0, :][0]
             self.updateCenter(circle[0], circle[1])
@@ -108,7 +104,7 @@ class VisualSystem:
             return image
         return image
 
-
 if __name__ == "__main__":
-	capture_frame()
-	imload()
+    """Main(ly) for testing purposes"""
+    capture_frame()
+    imload()
