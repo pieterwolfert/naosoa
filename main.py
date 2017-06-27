@@ -62,19 +62,23 @@ def main():
     nr_iterations = 10
 
     limb_speeds = [0.1, 0.1, 0.1, 0.1] #left leg, right leg, left arm, right arm
-    limb_speeds_epoch = []
     mobile_movement = 0
     mobile_movement_epoch = []
+
+    limb_speeds = [random.uniform(0.3, 0.7),
+                   random.uniform(0.3, 0.7),
+                   random.uniform(0.3, 0.7),
+                   random.uniform(0.3, 0.7)]
 
     for epoch in range(nr_epochs):
         print("Epoch " + str(epoch))
         for iteration in range(nr_iterations):
+            
+            limb_speeds[0] += random.uniform(-0.1, 0.1)
+            limb_speeds[1] += random.uniform(-0.1, 0.1)
+            limb_speeds[2] += random.uniform(-0.1, 0.1)
+            limb_speeds[3] += random.uniform(-0.1, 0.1)
 
-            if epoch == 0:
-                limb_speeds = [random.uniform(0.3, 0.7),
-                               random.uniform(0.3, 0.7),
-                               random.uniform(0.3, 0.7),
-                               random.uniform(0.3, 0.7)]
 
             if cv2.waitKey(33) == 27:
                 vs.unsubscribe()
@@ -82,7 +86,7 @@ def main():
                 break #break the loop
 
             print("limb_speeds: " + str(limb_speeds))
-            movement.moveAll(limb_speeds, epoch)
+            movement.moveAll(limb_speeds, iteration)
             mobile_movement = objectSpeed(vs)
             time.sleep(5)
 

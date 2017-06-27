@@ -34,11 +34,12 @@ class Integrator:
 		"""
 		#Calculate correlation between each limb and the mobile movement
 		correlations  = self.correlation(limb_speeds_epoch, mobile_movement_epoch)
-		limb_speeds = [0.1, 0.1, 0.1, 0.1]
 		max_corr_limb = np.argmax[correlations]
+
 		#Increase the speed of the limb that correlated most
 		pos_new = limb_speeds_epoch[max_corr_limb]+abs(correlations[max_corr_limb])*self.learning_rate
-		limb_speeds = [pos_new if i is max_corr_limb else x-abs(correlations[i])*self.learning_rate for i, x in enumerate(limb_speeds)]
+		limb_speeds = [pos_new if i is max_corr_limb else x-abs(correlations[i])*self.learning_rate for i, x in enumerate(correlations)]
+
 		return limb_speeds
 
 	def correlation(self, limb_speeds_epoch, mobile_movement_epoch):
