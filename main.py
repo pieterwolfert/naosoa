@@ -66,7 +66,7 @@ def main():
     learning_rate = 0.01
     integrator = Integrator(learning_rate)
     nr_epochs = 5
-    nr_iterations = 5
+    nr_iterations = 3
     limb_speeds = [0.1, 0.1, 0.1, 0.1] #left leg, right leg, left arm, right arm
     limb_speeds_epoch = []
     mobile_movement = 0

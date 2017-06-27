@@ -29,13 +29,10 @@ class Integrator:
 		"""
 		#Calculate correlation between each limb and the mobile movement
 		correlations, avg_limb_speeds = self.correlation(limb_speeds_epoch, mobile_movement_epoch)
-		print correlations
-		max_corr_limb = np.argmax[correlations]
-
+		max_corr_limb = np.argmax(correlations)
 		#Increase the speed of the limb that correlated most and decrease the speeds of other limbs
-		pos_new = limb_speeds_epoch[max_corr_limb]+abs(correlations[max_corr_limb])*self.learning_rate
-		limb_speeds = [pos_new if i is max_corr_limb else x-abs(correlations[i])*self.learning_rate for i, x in enumerate(correlations)]
-
+		pos_new = avg_limb_speeds[max_corr_limb]+(abs(correlations[max_corr_limb])*self.learning_rate)
+		limb_speeds = [pos_new if i is max_corr_limb else x-(abs(correlations[i])*self.learning_rate) for i, x in enumerate(avg_limb_speeds)]
 		return limb_speeds
 
 	def correlation(self, limb_speeds_epoch, mobile_movement_epoch):
@@ -46,8 +43,4 @@ class Integrator:
 		corr = np.corrcoef([limb_speeds_left_arm, limb_speeds_right_arm,
 							limb_speeds_left_leg, limb_speeds_right_leg,
 							mobile_movement_epoch])
-
-		return [corr[0, 4], corr[1, 4], corr[2, 4], corr[3, 4]], [np.mean(limb_speeds_left_leg),
-														   np.mean(limb_speeds_right_leg),
-														   np.mean(limb_speeds_left_arm),
-														   np.mean(limb_speeds_right_arm)]
+		return [corr[0, 4], corr[1, 4], corr[2, 4], corr[3, 4]], [np.mean(limb_speeds_left_leg), np.mean(limb_speeds_right_leg), np.mean(limb_speeds_left_arm), np.mean(limb_speeds_right_arm)]
