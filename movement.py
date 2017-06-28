@@ -84,7 +84,7 @@ def main():
     motionProxy = naoqi.ALProxy("ALMotion", ip, port)
     postureProxy.goToPosture("LyingBack", 0.7)
     #Set joints to standard position
-    joints = ["LShoulderPitch", "RShoulderPitch", "RElbowRoll", "LElbowRoll",
+    joints = ["LShoulderPitch", "RShoulderPitch", "RElbowRoll", "LElbowRoll",\
                 "LHipPitch", "RHipPitch", "LKneePitch", "RKneePitch"]
     target_angle = [-0.1, -0.1, 0.0, 0.0, -0.1, -0.1, 0.0, 0.0]
     maxSpeedFraction = 0.4

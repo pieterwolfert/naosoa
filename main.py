@@ -65,7 +65,7 @@ def main():
     """
     job.postureProxy.goToPosture("LyingBack", 0.7)
     #Set joints to standard position
-    joints = ["LShoulderPitch", "RShoulderPitch", "RElbowRoll", "LElbowRoll",
+    joints = ["LShoulderPitch", "RShoulderPitch", "RElbowRoll", "LElbowRoll",\
                 "LHipPitch", "RHipPitch", "LKneePitch", "RKneePitch"]
     target_angle = [-0.1, -0.1, 0.0, 0.0, -0.1, -0.1, 0.0, 0.0]
     maxSpeedFraction = 0.4
@@ -77,6 +77,7 @@ def main():
     learning_rate = 0.01
     integrator = Integrator(learning_rate)
     nr_epochs = 5
+    #number of iterations should be even
     nr_iterations = 3
     limb_speeds = [0.1, 0.1, 0.1, 0.1] #left leg, right leg, left arm, right arm
     limb_speeds_epoch = []
@@ -99,7 +100,8 @@ def main():
             mobile_movement_epoch.append(mobile_movement)
         #calculate new speeds with limb_speeds and
         #mobile_movement from previous epoch
-        limb_speeds = integrator.limbSpeeds(limb_speeds_epoch, mobile_movement_epoch)
+        limb_speeds = integrator.limbSpeeds(limb_speeds_epoch, \
+                                            mobile_movement_epoch)
     """
     End of experiment
     """

@@ -72,7 +72,7 @@ class VisualSystem:
 
     def getDifference(self):
         """Calculates euclidean distance between two centers. """
-        return istance.euclidean((self.Xcenter_old, self.Ycenter_old),\
+        return distance.euclidean((self.Xcenter_old, self.Ycenter_old),\
                                  (self.Xcenter, self.Ycenter))
 
     def getBall(self, image):
