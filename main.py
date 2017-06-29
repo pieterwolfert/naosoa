@@ -67,10 +67,13 @@ def main():
     #Set joints to standard position
     joints = ["LShoulderPitch", "RShoulderPitch", "RElbowRoll", "LElbowRoll",\
                 "LHipPitch", "RHipPitch", "LKneePitch", "RKneePitch"]
-    target_angle = [-0.1, -0.1, 0.0, 0.0, -0.1, -0.1, 0.0, 0.0]
+    target_angle = [-0.1, -0.1, 0.0, 0.0, -0.2, -0.2, 0.0, 0.0]
     maxSpeedFraction = 0.4
     job.motionProxy.setAngles(joints, target_angle, maxSpeedFraction)
-    time.sleep(2)
+    job.setTextProxy()
+    job.textProxy.say("You have 30 seconds to attach a limb to the mobile")
+    time.sleep(30)
+    job.textProxy.say("Let's roll!")
     """
     Training loop in which the networks are trained on-line
     """
@@ -78,12 +81,12 @@ def main():
     integrator = Integrator(learning_rate)
     nr_epochs = 5
     #number of iterations should be even
-    nr_iterations = 3
+    nr_iterations = 10
     limb_speeds = [0.1, 0.1, 0.1, 0.1] #left leg, right leg, left arm, right arm
     limb_speeds_epoch = []
     mobile_movement = 0
     mobile_movement_epoch = []
-    limb_speeds = [random.uniform(0.3, 0.7) for x in range(4)]
+    limb_speeds = [random.uniform(0.3, 0.5) for x in range(4)]
     for epoch in range(nr_epochs):
         print("Epoch " + str(epoch))
         for iteration in range(nr_iterations):
@@ -92,9 +95,9 @@ def main():
                 vs.unsubscribe()
                 myBroker.shutdown()
                 break #break the loop
-            print("limb_speeds: " + str(limb_speeds))
             movement.moveAll(limb_speeds, iteration)
             mobile_movement = objectSpeed(vs)
+            print("limb_speeds + mobile speed: " + str(limb_speeds) + str(mobile_movement))
             time.sleep(5)
             limb_speeds_epoch.append(limb_speeds)
             mobile_movement_epoch.append(mobile_movement)

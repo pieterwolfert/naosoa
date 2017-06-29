@@ -41,6 +41,10 @@ class RobotConnect:
         """Sets a naoqi video proxy."""
         self.videoProxy = ALProxy("ALVideoDevice")
 
+    def setTextProxy(self):
+        """Sets a text to speech proxy."""
+        self.textProxy = ALProxy("ALTextToSpeech")
+
 def main():
     """
     Main is purely for testing purposes.
